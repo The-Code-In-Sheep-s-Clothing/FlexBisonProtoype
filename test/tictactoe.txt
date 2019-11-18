@@ -1,0 +1,17 @@
+Game tictactoe
+Players 2
+
+Board board 3 3
+
+Piece piece 5 {
+    Player 1 'x'
+    Player 2 'o'
+}
+    
+Turn {
+    Place piece IsEmpty
+}
+
+Win win_name {
+    3 InARow AllDirections OfSamePlayer
+}
