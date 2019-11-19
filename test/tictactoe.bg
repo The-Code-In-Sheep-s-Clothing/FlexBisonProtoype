@@ -4,8 +4,8 @@ Players 2
 Board board 3 3
 
 Piece piece 5 {
-    Player 1 'x'
-    Player 2 'o'
+    Player 1 x
+    Player 2 o
 }
     
 Turn {
@@ -16,6 +16,6 @@ Win {
     InARow 3 AllDirections
 }
 
-// End {
-// IsFull
-// }
+End {
+    IsFull
+}
