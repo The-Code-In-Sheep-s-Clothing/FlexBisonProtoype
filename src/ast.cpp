@@ -25,7 +25,7 @@ namespace ast {
     }
     void Node::print(std::ostream &o, PrintContext &p) {
         p.print_indent(o);
-        o << "Generic Node" << std::endl;
+        this->print(o);
     }
 
     // NumberNode
@@ -41,6 +41,7 @@ namespace ast {
     void NumberNode::print(std::ostream &o) {
         o << this->value;
     }
+    // End number node
 
     // StringNode
     StringNode::StringNode() {
@@ -55,6 +56,7 @@ namespace ast {
     void StringNode::print(std::ostream &o) {
         o << "\"" << this->value << "\"";
     }
+    // End string node
 
     // Block statement
     Block::Block() {}
@@ -73,13 +75,17 @@ namespace ast {
     }
     void Block::print(std::ostream &o, PrintContext &p) {
         p.print_indent(o);
-        o << "Block:" << std::endl;
+        this->print_imp(o);
         p.indent();
         for (int i = 0; i < (int)this->statements.size(); i++) {
             this->statements[i]->print(o, p);
         }
         p.dedent();
     }
+    void Block::print_imp(std::ostream &o) {
+        o << "Block:" << std::endl;
+    }
+    // End block
 
     // GameStatement
     GameStatement::GameStatement() {
@@ -93,10 +99,7 @@ namespace ast {
         this->name.print(o);
         o << " }" << std::endl;
     }
-    void GameStatement::print(std::ostream &o, PrintContext &p) {
-        p.print_indent(o);
-        this->print(o);
-    }
+    // End game statement
 
     // PlayersStatement
     PlayersStatement::PlayersStatement() {
@@ -110,10 +113,7 @@ namespace ast {
         this->num.print(o);
         o << " }" << std::endl;
     }
-    void PlayersStatement::print(std::ostream &o, PrintContext &p) {
-        p.print_indent(o);
-        this->print(o);
-    }
+    // End players statement
 
     // Board statement
     BoardStatement::BoardStatement() {
@@ -133,10 +133,7 @@ namespace ast {
         o << ", y = "; this->y.print(o);
         o << " }" << std::endl;
     }
-    void BoardStatement::print(std::ostream &o, PrintContext &p) {
-        p.print_indent(o);
-        this->print(o);
-    }
+    // End board statement
     
     // Piece block
     PieceBlock::PieceBlock() {
@@ -152,20 +149,17 @@ namespace ast {
     void PieceBlock::set_num(NumberNode n) {
         this->num = n;
     }
-    void PieceBlock::print(std::ostream &o, PrintContext &p) {
-        p.print_indent(o);
+    void PieceBlock::print_imp(std::ostream &o) {
         o << "Piece Block: ";
         o << " { name = "; this->name.print(o);
         o << ", num = "; this->num.print(o);
         o << " }" << std::endl;
-        p.indent();
-        for (int i = 0; i < (int)this->statements.size(); i++) {
-            this->statements[i]->print(o, p);
-        }
-        p.dedent();
     }
 
-    // PlayerPieceStatement
+    PlayerPieceStatement::PlayerPieceStatement() {
+        this->num = NumberNode();
+        this->display = StringNode();
+    }
     PlayerPieceStatement::PlayerPieceStatement(NumberNode n, StringNode s) {
         this->num = n;
         this->display = s;
@@ -176,9 +170,30 @@ namespace ast {
         o << ", display = "; this->display.print(o);
         o << " }" << std::endl;
     }
-    void PlayerPieceStatement::print(std::ostream &o, PrintContext &p) {
-        p.print_indent(o);
-        this->print(o);
+    // End pieceblock
+
+    // Turn block
+    TurnBlock::TurnBlock() {}
+    TurnBlock::TurnBlock(std::shared_ptr<Statement> s) {
+        this->statements.push_back(s);
+    }
+    void TurnBlock::print_imp(std::ostream &o) {
+        o << "Turn: " << std::endl;
     }
 
+    PlaceTurnStatement::PlaceTurnStatement() {
+        this->piece = StringNode();
+        this->rule = StringNode();
+    }
+    PlaceTurnStatement::PlaceTurnStatement(StringNode p, StringNode r) {
+        this->piece = p;
+        this->rule = r;
+    }
+    void PlaceTurnStatement::print(std::ostream &o) {
+        o << "place: ";
+        o << " { piece = "; this->piece.print(o);
+        o << ", rule = "; this->rule.print(o);
+        o << " }" << std::endl;
+    }
+    // End turn block
 }

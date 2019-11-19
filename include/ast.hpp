@@ -51,6 +51,7 @@ namespace ast {
 
     // Statements
     class Block : public Statement {
+        virtual void print_imp(std::ostream &);
         protected:
             std::vector<std::shared_ptr<Statement>> statements;
         public:
@@ -67,7 +68,6 @@ namespace ast {
             GameStatement();
             GameStatement(StringNode);
             virtual void print(std::ostream &) override;
-            virtual void print(std::ostream &, PrintContext &) override;
     };
     class PlayersStatement : public Statement {
         NumberNode num;
@@ -75,7 +75,6 @@ namespace ast {
             PlayersStatement();
             PlayersStatement(NumberNode);
             virtual void print(std::ostream &) override;
-            virtual void print(std::ostream &, PrintContext &) override;
     };
     class BoardStatement : public Statement {
         StringNode name;
@@ -85,47 +84,56 @@ namespace ast {
             BoardStatement();
             BoardStatement(StringNode, NumberNode, NumberNode);
             virtual void print(std::ostream &) override;
-            virtual void print(std::ostream &, PrintContext &) override;
     };
     // Piece Block
     class PieceBlock : public Block {
         StringNode name;
         NumberNode num;
+        virtual void print_imp(std::ostream &) override;
         public:
             PieceBlock();
             PieceBlock(std::shared_ptr<Statement>);
             void set_name(StringNode);
             void set_num(NumberNode);
-            // virtual void print(std::ostream &) override;
-            virtual void print(std::ostream &, PrintContext &) override;
     };
     class PlayerPieceStatement : public Statement {
         NumberNode num;
         StringNode display;
         public:
+            PlayerPieceStatement();
             PlayerPieceStatement(NumberNode, StringNode);
             virtual void print(std::ostream &) override;
-            virtual void print(std::ostream &, PrintContext &) override;
     };
     // Turn Block
     class TurnBlock : public Block {
+        virtual void print_imp(std::ostream &) override;
         public:
             TurnBlock();
+            TurnBlock(std::shared_ptr<Statement>);
     };
-    class ActionStatement : public Statement {
+    class PlaceTurnStatement : public Statement {
+        StringNode piece;
+        StringNode rule;
         public:
-            ActionStatement();
+            PlaceTurnStatement();
+            PlaceTurnStatement(StringNode, StringNode);
+            virtual void print(std::ostream &) override;
     };
+    // Other turn statements, probably "move" "remove"
+
     // Win Block
     class WinBlock : public Block {
         StringNode name;
         public:
             WinBlock();
+            virtual void print_imp(std::ostream &) override;
     };
     class WinConditionStatement : public Statement {
         StringNode name;
         public:
             WinConditionStatement();
+            WinConditionStatement();
+            virtual void print(std::ostream &) override;
     };
 }
 #endif

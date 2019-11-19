@@ -19,7 +19,6 @@
     std::string * Str;
     ast::Statement * Stmt;
     ast::Block * Block;
-    ast::PieceBlock * PieceBlock;
 }
 
 /* Primitives  */
@@ -28,7 +27,7 @@
 %token <Boolean> BOOL_LIT
 
 /* Top-level Statement types */
-%token GAME PLAYERS PLAYER BOARD PIECE TURN WIN
+%token GAME PLAYERS PLAYER BOARD PIECE TURN WIN END
 
 /* Piece actions */
 %token PLACE
@@ -40,10 +39,10 @@
 %token NEWLINE
 
 /* Rule types */
-%type <Block> stmt_list piece_block /* turn_block win_block */
-%type <PieceBlock> piece_block_stmt_list /* turn_block_stmt_list win_block_stmt_list */
+%type <Block> stmt_list piece_block turn_block win_block
+%type <Block> piece_block_stmt_list turn_block_stmt_list win_block_stmt_list
 %type <Stmt> stmt game_stmt players_stmt board_stmt
-%type <Stmt> piece_block_stmt  /*turn_block_stmt win_block_stmt */
+%type <Stmt> piece_block_stmt turn_block_stmt win_block_stmt
 
 %start program
 
@@ -65,7 +64,7 @@ stmt
     | players_stmt
     | board_stmt
     | piece_block { $$ = (ast::Statement *)$1; }
-    /* | turn_block { $$ = (ast::Statement *)$1; } */
+    | turn_block { $$ = (ast::Statement *)$1; }
     /* | win_block { $$ = (ast::Statement *)$1; } */
     ;
 
@@ -82,8 +81,8 @@ board_stmt: BOARD STR_LIT INT_LIT INT_LIT NEWLINE {
 };
 /* Piece block */
 piece_block: PIECE STR_LIT INT_LIT '{' NEWLINE piece_block_stmt_list '}' NEWLINE { 
-    $6->set_name(ast::StringNode(*$2));
-    $6->set_num(ast::NumberNode($3));
+    ((ast::PieceBlock *)$6)->set_name(ast::StringNode(*$2));
+    ((ast::PieceBlock *)$6)->set_num(ast::NumberNode($3));
     $$ = $6; 
 };
 
@@ -97,22 +96,35 @@ piece_block_stmt: PLAYER INT_LIT STR_LIT NEWLINE {
 };
 
 /* Turn block */
-/* turn_block: {}; */
-/* turn_block: TURN '{' '}' {}; */
-/*  */
-/* turn_block_stmt_list */
-/*     : turn_block_stmt {} */
-/*     | turn_block_stmt_list {} */
-/*     ; */
-/*  */
+turn_block: TURN '{' NEWLINE turn_block_stmt_list '}' NEWLINE {
+    $$ = $4;
+};
+
+turn_block_stmt_list
+    : turn_block_stmt { $$ = new ast::TurnBlock(std::shared_ptr<ast::Statement>($1)); }
+    | turn_block_stmt_list turn_block_stmt { $1->add(std::shared_ptr<ast::Statement>($2)); $$ = $1; }
+    ;
+
+turn_block_stmt: PLACE STR_LIT STR_LIT NEWLINE {
+    $$ = new ast::PlaceTurnStatement(ast::StringNode(*$2), ast::StringNode(*$3));
+}
+
 /* Win Block */
-/* win_block: {}; */
-/* win_block: WIN STR_LIT '{' '}' {}; */
-/*  */
-/* win_block_stmt_list */
-/*     : win_block_stmt {} */
-/*     | win_block_stmt_list {} */
-/*     ; */
+win_block: WIN '{' NEWLINE win_block_stmt_list '}' NEWLINE {
+    $$ = $4;
+};
+
+win_block_stmt_list
+    : win_block_stmt { $$ = new ast::WinBlock(std::shared_ptr<ast::Statement>($1)); }
+    | win_block_stmt_list win_block_stmt { $1->add(std::shared_ptr<ast::Statement>($2)); $$ = $1; }
+    ;
+
+win_block_stmt: INT_LIT STR_LIT STR_LIT STR_LIT NEWLINE {
+    $$ = new ast::WinConditionStatement(ast::NumberNode($1), 
+                                        ast::StringNode(*$2),
+                                        ast::StringNode(*$3),
+                                        ast::StringNode(*$4));
+}
 
 %%
 

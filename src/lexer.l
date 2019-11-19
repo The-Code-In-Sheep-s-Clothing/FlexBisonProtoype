@@ -14,7 +14,7 @@
 %%
 [ \t]                   // Ignore Whitespace
 [/]{2}.*                // Ignore comments
-^[ \t]+[\n\r]+          // Ignore empty lines
+^[ \t]*[\n\r]+          // Ignore empty lines
 
 "Game"    { return GAME; } 
 "Players" { return PLAYERS; } 
@@ -23,6 +23,8 @@
 "Piece"   { return PIECE; }
 "Turn"    { return TURN; }
 "Win"     { return WIN; }
+"End"     { return END; }
+"Place"   { return PLACE; }
 
 "{" |
 "}" { return yytext[0]; }
