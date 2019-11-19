@@ -19,6 +19,7 @@
     std::string * Str;
     ast::Statement * Stmt;
     ast::Block * Block;
+    ast::PieceBlock * PieceBlock;
 }
 
 /* Primitives  */
@@ -40,7 +41,7 @@
 
 /* Rule types */
 %type <Block> stmt_list piece_block /* turn_block win_block */
-%type <Block> piece_block_stmt_list /* turn_block_stmt_list win_block_stmt_list */
+%type <PieceBlock> piece_block_stmt_list /* turn_block_stmt_list win_block_stmt_list */
 %type <Stmt> stmt game_stmt players_stmt board_stmt
 %type <Stmt> piece_block_stmt  /*turn_block_stmt win_block_stmt */
 
@@ -55,8 +56,8 @@ program
     ;
 
 stmt_list
-    : stmt stmt_list { $2->add($1); $$ = $2; }
-    | stmt { $$ = new ast::Block($1); }
+    : stmt { $$ = new ast::Block(std::shared_ptr<ast::Statement>($1)); }
+    | stmt_list stmt { $1->add(std::shared_ptr<ast::Statement>($2)); $$ = $1; }
     ;
 
 stmt
@@ -80,14 +81,18 @@ board_stmt: BOARD STR_LIT INT_LIT INT_LIT NEWLINE {
                                  ast::NumberNode($4)); 
 };
 /* Piece block */
-piece_block: PIECE STR_LIT '{' piece_block_stmt_list '}' { $$ = $4; };
+piece_block: PIECE STR_LIT INT_LIT '{' NEWLINE piece_block_stmt_list '}' NEWLINE { 
+    $6->set_name(ast::StringNode(*$2));
+    $6->set_num(ast::NumberNode($3));
+    $$ = $6; 
+};
 
 piece_block_stmt_list
-    : piece_block_stmt piece_block_stmt_list {}
-    | piece_block_stmt { $$ = new ast::Block($1); }
+    : piece_block_stmt { $$ = new ast::PieceBlock(std::shared_ptr<ast::Statement>($1)); }
+    | piece_block_stmt_list piece_block_stmt { $1->add(std::shared_ptr<ast::Statement>($2)); $$ = $1; }
     ;
 
-piece_block_stmt: PLAYER INT_LIT STR_LIT { 
+piece_block_stmt: PLAYER INT_LIT STR_LIT NEWLINE { 
     $$ = new ast::PlayerPieceStatement(ast::NumberNode($2), ast::StringNode(*$3)); 
 };
 
