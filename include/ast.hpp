@@ -144,6 +144,13 @@ namespace ast {
             WinBlock(std::shared_ptr<Statement>);
             virtual void print_imp(std::ostream &) override;
     };
+    // End Block
+    class EndBlock : public Block {
+        public:
+            EndBlock();
+            EndBlock(std::shared_ptr<Statement>);
+            virtual void print_imp(std::ostream &) override;
+    };
 
     // ast related functions
     std::shared_ptr<BoardStatement> get_board(Block *);

@@ -24,5 +24,6 @@ int main(int argc, char *argv[]) {
         board->print(std::cout);
     if (players)
         players->print(std::cout);
+
     return 0;
 }

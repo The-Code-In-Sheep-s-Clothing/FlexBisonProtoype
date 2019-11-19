@@ -3,19 +3,15 @@ Players 2
 
 Board board 3 3
 
-Piece piece 5 {
+Piece piece 5
     Player 1 x
     Player 2 o
-}
     
-Turn {
+Turn
     Place piece IsEmpty
-}
 
-Win {
+Win
     InARow 3 AllDirections
-}
 
-End {
+End
     IsFull
-}

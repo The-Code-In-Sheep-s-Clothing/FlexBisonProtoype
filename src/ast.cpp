@@ -245,7 +245,18 @@ namespace ast {
         o << "Win: " << std::endl;
     }
     // End Win Block
-    
+
+
+    // End block
+    EndBlock::EndBlock() {}
+    EndBlock::EndBlock(std::shared_ptr<Statement> s) {
+        this->statements.push_back(s);
+    }
+    void EndBlock::print_imp(std::ostream &o) {
+        o << "Win: " << std::endl;
+    }
+    // End End Block
+
     // ast related functions
     std::shared_ptr<BoardStatement> get_board(Block * ast) {
         for (int i = 0; i < ast->statements.size(); i++) {
