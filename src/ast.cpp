@@ -212,9 +212,12 @@ namespace ast {
     // End pieceblock
 
     // Turn block
-    TurnBlock::TurnBlock() {}
+    TurnBlock::TurnBlock() {
+        this->type = TURN;
+    }
     TurnBlock::TurnBlock(std::shared_ptr<Statement> s) {
         this->statements.push_back(s);
+        this->type = TURN;
     }
     void TurnBlock::print_imp(std::ostream &o) {
         o << "Turn: " << std::endl;
@@ -237,9 +240,12 @@ namespace ast {
     // End turn block
 
     // Win block
-    WinBlock::WinBlock() {}
+    WinBlock::WinBlock() {
+        this->type = WIN;
+    }
     WinBlock::WinBlock(std::shared_ptr<Statement> s) {
         this->statements.push_back(s);
+        this->type = WIN;
     }
     void WinBlock::print_imp(std::ostream &o) {
         o << "Win: " << std::endl;
@@ -248,12 +254,15 @@ namespace ast {
 
 
     // End block
-    EndBlock::EndBlock() {}
+    EndBlock::EndBlock() {
+        this->type = END;
+    }
     EndBlock::EndBlock(std::shared_ptr<Statement> s) {
         this->statements.push_back(s);
+        this->type = END;
     }
     void EndBlock::print_imp(std::ostream &o) {
-        o << "Win: " << std::endl;
+        o << "End: " << std::endl;
     }
     // End End Block
 

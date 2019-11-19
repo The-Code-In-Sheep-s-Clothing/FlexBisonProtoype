@@ -4,10 +4,9 @@
 #include "parser.hpp"
 #include "ast.hpp"
 #include "builtins.hpp"
+#include "interpreter.hpp"
 
 extern int yyparse();
-std::shared_ptr<ast::BoardStatement> board;
-std::shared_ptr<ast::PlayersStatement> players;
 
 using namespace std;
 int main(int argc, char *argv[]) {
@@ -18,12 +17,7 @@ int main(int argc, char *argv[]) {
     }
     // Parse was successful
     ast_root->print(std::cout);
-    board = ast::get_board(ast_root);
-    players = ast::get_players(ast_root);
-    if (board)
-        board->print(std::cout);
-    if (players)
-        players->print(std::cout);
-
+    interpreter::Interpreter inter(ast_root);
+    inter.run();
     return 0;
 }

@@ -11,7 +11,8 @@ Turn
     Place piece IsEmpty
 
 Win
-    InARow 3 AllDirections
+    InARow 3 piece AllDirections
 
 End
     IsFull
+    InARow 3 piece AllDirections

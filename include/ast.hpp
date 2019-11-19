@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace ast {
-    enum Types { NUMBER, STRING, BOARD, PLAYERS, STATEMENT };
+    enum Types { NUMBER, STRING, BOARD, PLAYERS, STATEMENT, TURN, WIN, END};
     class PrintContext {
         int indent_level;
         public:
@@ -94,9 +94,9 @@ namespace ast {
     };
     class BoardStatement : public Statement {
         StringNode name;
-        NumberNode x;
-        NumberNode y;
         public:
+            NumberNode x;
+            NumberNode y;
             BoardStatement();
             BoardStatement(StringNode, NumberNode, NumberNode);
             virtual void print(std::ostream &) override;
