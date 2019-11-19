@@ -18,6 +18,7 @@
 
 "Game"    { return GAME; } 
 "Players" { return PLAYERS; } 
+"Player"  { return PLAYER; } 
 "Board"   { return BOARD; }
 "Piece"   { return PIECE; }
 "Turn"    { return TURN; }

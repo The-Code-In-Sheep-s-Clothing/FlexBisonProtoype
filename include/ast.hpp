@@ -17,11 +17,15 @@ namespace ast {
     class NumberNode : public Expression {
         int value;
         public:
+            NumberNode();
+            NumberNode(int);
             int get_value() const; 
     };
     class StringNode : public Expression {
         std::string value;
         public:
+            StringNode();
+            StringNode(std::string);
             std::string get_value() const; 
     };
 
@@ -33,13 +37,66 @@ namespace ast {
     class AdditionNode : public BinaryOpNode {
 
     };
-    class Block : public Expression {
-        std::vector<Expression> block;
-        std::string test;
+
+    // Statements
+    class Block : public Statement {
+        std::vector<Statement*> statements;
         public:
             Block();
-            Block(std::string);
+            Block(Statement*);
+            Block(std::vector<Statement*>);
             void print(std::ostream &o) override;
+            void add(Statement*);
+    };
+    class GameStatement : public Statement {
+        StringNode name;
+        public:
+            GameStatement();
+    };
+    class PlayersStatement : public Statement {
+        NumberNode num;
+        public:
+            PlayersStatement();
+    };
+    class BoardStatement : public Statement {
+        StringNode name;
+        NumberNode x;
+        NumberNode y;
+        public:
+            BoardStatement();
+    };
+    // Piece Block
+    class PieceBlock : public Block {
+        StringNode name;
+        NumberNode num;
+        public:
+            PieceBlock();
+    };
+    class PlayerPieceStatement : public Statement {
+        NumberNode num;
+        StringNode display;
+        public:
+            PlayerPieceStatement(NumberNode, StringNode);
+    };
+    // Turn Block
+    class TurnBlock : public Block {
+        public:
+            TurnBlock();
+    };
+    class ActionStatement : public Statement {
+        public:
+            ActionStatement();
+    };
+    // Win Block
+    class WinBlock : public Block {
+        StringNode name;
+        public:
+            WinBlock();
+    };
+    class WinConditionStatement : public Statement {
+        StringNode name;
+        public:
+            WinConditionStatement();
     };
 }
 #endif
