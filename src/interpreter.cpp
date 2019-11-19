@@ -11,9 +11,9 @@ namespace interpreter {
         this->display = display;
     }
     GamePiece::GamePiece() {}
-    GamePiece::GamePiece(int owner, std::string name) {
+    GamePiece::GamePiece(int owner, std::shared_ptr<PieceObj> desc) {
         this->owner = owner;
-        this->name = name;
+        this->desc = desc;
     }
     Interpreter::Interpreter() {}
     Interpreter::Interpreter(ast::Block *ast) {

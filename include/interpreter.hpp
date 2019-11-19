@@ -15,9 +15,9 @@ namespace interpreter {
     class GamePiece {
         public:
             int owner;
-            std::string name;
+            std::shared_ptr<PieceObj> desc;
             GamePiece();
-            GamePiece(int, std::string);
+            GamePiece(int, std::shared_ptr<PieceObj>);
     };
     class Interpreter {
         std::shared_ptr<ast::Block> ast;
