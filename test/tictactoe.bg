@@ -12,6 +12,10 @@ Turn {
     Place piece IsEmpty
 }
 
-Win win_name {
-    3 InARow AllDirections OfSamePlayer
+Win {
+    InARow 3 AllDirections
 }
+
+// End {
+// IsFull
+// }

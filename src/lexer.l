@@ -14,7 +14,7 @@
 
 %%
 [ \t]                   // Ignore Whitespace
-[/]{2}.*                // Ignore comments
+[/]{2}.*[\n\r]          // Ignore comments
 ^[ \t]*[\n\r]+          // Ignore empty lines
 
 "Game"    { return GAME; } 

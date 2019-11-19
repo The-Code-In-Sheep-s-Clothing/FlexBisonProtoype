@@ -135,7 +135,6 @@ expression
     /* | function_call { $$ = $1; } */
     ;
 
-/* Kinda Gross */
 function_arg_list
     : expression { 
             std::vector<std::shared_ptr<ast::Expression>> *temp = new std::vector<std::shared_ptr<ast::Expression>>;
