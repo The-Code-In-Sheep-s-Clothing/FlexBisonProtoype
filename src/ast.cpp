@@ -50,9 +50,36 @@ namespace ast {
         this->statements.push_back(s);
     }
 
+    // GameStatement
+    GameStatement::GameStatement() {
+        this->name = StringNode();
+    }
+    GameStatement::GameStatement(StringNode s) {
+        this->name = s;
+    }
+
+    // PlayersStatement
+    PlayersStatement::PlayersStatement() {
+        this->num = NumberNode();
+    }
+    PlayersStatement::PlayersStatement(NumberNode n) {
+        this->num = n;
+    }
+
     // PlayerPieceStatement
     PlayerPieceStatement::PlayerPieceStatement(NumberNode n, StringNode s) {
         this->num = n;
         this->display = s;
+    }
+
+    BoardStatement::BoardStatement() {
+        this->name = StringNode();
+        this->x = NumberNode();
+        this->y = NumberNode();
+    }
+    BoardStatement::BoardStatement(StringNode s, NumberNode x, NumberNode y) {
+        this->name = s;
+        this->x = x;
+        this->y = y;
     }
 }

@@ -39,7 +39,7 @@
 %token NEWLINE
 
 /* Rule types */
-%type <Block> stmt_list piece_block turn_block win_block
+%type <Block> stmt_list piece_block /* turn_block win_block */
 %type <Block> piece_block_stmt_list /* turn_block_stmt_list win_block_stmt_list */
 %type <Stmt> stmt game_stmt players_stmt board_stmt
 %type <Stmt> piece_block_stmt  /*turn_block_stmt win_block_stmt */
@@ -64,13 +64,21 @@ stmt
     | players_stmt
     | board_stmt
     | piece_block { $$ = (ast::Statement *)$1; }
-    | turn_block { $$ = (ast::Statement *)$1; }
-    | win_block { $$ = (ast::Statement *)$1; }
+    /* | turn_block { $$ = (ast::Statement *)$1; } */
+    /* | win_block { $$ = (ast::Statement *)$1; } */
     ;
 
-game_stmt: GAME STR_LIT NEWLINE {};
-players_stmt: PLAYERS INT_LIT NEWLINE {};
-board_stmt: BOARD STR_LIT INT_LIT INT_LIT NEWLINE {};
+game_stmt: GAME STR_LIT NEWLINE {
+    $$ = new ast::GameStatement(ast::StringNode(*$2));
+};
+players_stmt: PLAYERS INT_LIT NEWLINE {
+    $$ = new ast::PlayersStatement(ast::NumberNode($2));
+};
+board_stmt: BOARD STR_LIT INT_LIT INT_LIT NEWLINE { 
+    $$ = new ast::BoardStatement(ast::StringNode(*$2),
+                                 ast::NumberNode($3),
+                                 ast::NumberNode($4)); 
+};
 /* Piece block */
 piece_block: PIECE STR_LIT '{' piece_block_stmt_list '}' { $$ = $4; };
 
@@ -79,10 +87,12 @@ piece_block_stmt_list
     | piece_block_stmt { $$ = new ast::Block($1); }
     ;
 
-piece_block_stmt: PLAYER INT_LIT STR_LIT { $$ = new ast::PlayerPieceStatement($2, *$3); };
+piece_block_stmt: PLAYER INT_LIT STR_LIT { 
+    $$ = new ast::PlayerPieceStatement(ast::NumberNode($2), ast::StringNode(*$3)); 
+};
 
 /* Turn block */
-turn_block: {};
+/* turn_block: {}; */
 /* turn_block: TURN '{' '}' {}; */
 /*  */
 /* turn_block_stmt_list */
@@ -91,7 +101,7 @@ turn_block: {};
 /*     ; */
 /*  */
 /* Win Block */
-win_block: {};
+/* win_block: {}; */
 /* win_block: WIN STR_LIT '{' '}' {}; */
 /*  */
 /* win_block_stmt_list */

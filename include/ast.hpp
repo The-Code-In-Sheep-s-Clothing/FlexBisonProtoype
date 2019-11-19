@@ -52,11 +52,13 @@ namespace ast {
         StringNode name;
         public:
             GameStatement();
+            GameStatement(StringNode);
     };
     class PlayersStatement : public Statement {
         NumberNode num;
         public:
             PlayersStatement();
+            PlayersStatement(NumberNode);
     };
     class BoardStatement : public Statement {
         StringNode name;
@@ -64,6 +66,7 @@ namespace ast {
         NumberNode y;
         public:
             BoardStatement();
+            BoardStatement(StringNode, NumberNode, NumberNode);
     };
     // Piece Block
     class PieceBlock : public Block {
