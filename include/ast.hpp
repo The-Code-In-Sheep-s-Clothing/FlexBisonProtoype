@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace ast {
-    enum Types { NUMBER, STRING, BOARD, PLAYERS, STATEMENT, TURN, WIN, END};
+    enum Types { NUMBER, STRING, BOARD, PLAYERS, STATEMENT, PIECE, TURN, WIN, END };
     class PrintContext {
         int indent_level;
         public:
@@ -86,8 +86,8 @@ namespace ast {
             virtual void print(std::ostream &) override;
     };
     class PlayersStatement : public Statement {
-        NumberNode num;
         public:
+            NumberNode num;
             PlayersStatement();
             PlayersStatement(NumberNode);
             virtual void print(std::ostream &) override;
@@ -101,23 +101,16 @@ namespace ast {
             BoardStatement(StringNode, NumberNode, NumberNode);
             virtual void print(std::ostream &) override;
     };
-    // Piece Block
-    class PieceBlock : public Block {
-        StringNode name;
-        NumberNode num;
-        virtual void print_imp(std::ostream &) override;
+    // Piece Statement
+    class PieceStatement : public Statement {
         public:
-            PieceBlock();
-            PieceBlock(std::shared_ptr<Statement>);
+            StringNode name;
+            NumberNode num;
+            std::vector<std::shared_ptr<Expression>> display;
+            PieceStatement();
+            PieceStatement(StringNode, NumberNode, std::vector<std::shared_ptr<Expression>>);
             void set_name(StringNode);
             void set_num(NumberNode);
-    };
-    class PlayerPieceStatement : public Statement {
-        NumberNode num;
-        StringNode display;
-        public:
-            PlayerPieceStatement();
-            PlayerPieceStatement(NumberNode, StringNode);
             virtual void print(std::ostream &) override;
     };
     // Turn Block
@@ -127,15 +120,6 @@ namespace ast {
             TurnBlock();
             TurnBlock(std::shared_ptr<Statement>);
     };
-    class PlaceTurnStatement : public Statement {
-        StringNode piece;
-        StringNode rule;
-        public:
-            PlaceTurnStatement();
-            PlaceTurnStatement(StringNode, StringNode);
-            virtual void print(std::ostream &) override;
-    };
-    // Other turn statements, probably "move" "remove"
 
     // Win Block
     class WinBlock : public Block {
@@ -155,5 +139,6 @@ namespace ast {
     // ast related functions
     std::shared_ptr<BoardStatement> get_board(Block *);
     std::shared_ptr<PlayersStatement> get_players(Block *);
+    std::vector<std::shared_ptr<PieceStatement>> get_pieces(Block *);
 }
 #endif

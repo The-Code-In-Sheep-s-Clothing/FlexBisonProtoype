@@ -3,9 +3,7 @@ Players 2
 
 Board board 3 3
 
-Piece piece 5
-    Player 1 x
-    Player 2 o
+Piece piece 5 x o
     
 Turn
     Place piece IsEmpty

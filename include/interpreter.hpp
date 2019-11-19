@@ -8,9 +8,9 @@ namespace interpreter {
         public:
             int num;
             std::string name;
-            std::vector<std::string> display;
+            std::string display;
             PieceObj();
-            PieceObj(int, std::string, std::vector<std::string>);
+            PieceObj(int, std::string, std::string);
     };
     class GamePiece {
         public:
@@ -23,12 +23,12 @@ namespace interpreter {
         std::shared_ptr<ast::Block> ast;
         std::string game;
         int players;
-        std::vector<std::vector<GamePiece>> board;
-        std::vector<PieceObj> pieces;
+        std::vector<std::vector<std::shared_ptr<GamePiece>>> board;
+        std::vector<std::vector<std::shared_ptr<PieceObj>>> pieces;
 
         void game_loop();
-        void setup();
         void make_board(std::shared_ptr<ast::BoardStatement>);
+        void make_pieces(std::vector<std::shared_ptr<ast::PieceStatement>>);
         public:
             Interpreter();
             Interpreter(ast::Block *);

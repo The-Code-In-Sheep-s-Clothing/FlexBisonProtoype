@@ -73,11 +73,6 @@ namespace ast {
     FunctionCallExpression::FunctionCallExpression(StringNode name, std::vector<std::shared_ptr<Expression>> args) {
         this->name = name;
         this->args = args;
-        for (int i = 0; i < builtins::func_map.size(); i++) {
-            if (builtins::func_map[i].name == name.get_value()) {
-                builtins::func_map[i].func(args);
-            }
-        }
     }
     void FunctionCallExpression::print(std::ostream &o) {
         o << "func ";
@@ -175,41 +170,31 @@ namespace ast {
     // End board statement
     
     // Piece block
-    PieceBlock::PieceBlock() {
-        this->name = StringNode();
-        this->num = NumberNode();
+    PieceStatement::PieceStatement() {
+        this->type = PIECE;
     }
-    PieceBlock::PieceBlock(std::shared_ptr<Statement> s) {
-        this->statements.push_back(s);
+    PieceStatement::PieceStatement(StringNode name, 
+                                   NumberNode num, 
+                                   std::vector<std::shared_ptr<Expression>> display) {
+        this->name = name;
+        this->num = num;
+        this->display = display;
+        this->type = PIECE;
     }
-    void PieceBlock::set_name(StringNode s) {
-        this->name = s;
-    }
-    void PieceBlock::set_num(NumberNode n) {
-        this->num = n;
-    }
-    void PieceBlock::print_imp(std::ostream &o) {
-        o << "Piece Block: ";
+    void PieceStatement::print(std::ostream &o) {
+        o << "Piece: ";
         o << " { name = "; this->name.print(o);
         o << ", num = "; this->num.print(o);
+        o << ", args = { ";
+        for (int i = 0; i < this->display.size(); i++) {
+            this->display[i]->print(o);
+            o << ", ";
+        }
+        o << " }";
         o << " }" << std::endl;
     }
 
-    PlayerPieceStatement::PlayerPieceStatement() {
-        this->num = NumberNode();
-        this->display = StringNode();
-    }
-    PlayerPieceStatement::PlayerPieceStatement(NumberNode n, StringNode s) {
-        this->num = n;
-        this->display = s;
-    }
-    void PlayerPieceStatement::print(std::ostream &o) {
-        o << "piece: ";
-        o << " { player_num = "; this->num.print(o);
-        o << ", display = "; this->display.print(o);
-        o << " }" << std::endl;
-    }
-    // End pieceblock
+    // End piece statement
 
     // Turn block
     TurnBlock::TurnBlock() {
@@ -221,21 +206,6 @@ namespace ast {
     }
     void TurnBlock::print_imp(std::ostream &o) {
         o << "Turn: " << std::endl;
-    }
-
-    PlaceTurnStatement::PlaceTurnStatement() {
-        this->piece = StringNode();
-        this->rule = StringNode();
-    }
-    PlaceTurnStatement::PlaceTurnStatement(StringNode p, StringNode r) {
-        this->piece = p;
-        this->rule = r;
-    }
-    void PlaceTurnStatement::print(std::ostream &o) {
-        o << "place: ";
-        o << " { piece = "; this->piece.print(o);
-        o << ", rule = "; this->rule.print(o);
-        o << " }" << std::endl;
     }
     // End turn block
 
@@ -282,5 +252,14 @@ namespace ast {
             }
         }
         return NULL;
+    }
+    std::vector<std::shared_ptr<PieceStatement>> get_pieces(Block * ast) {
+        std::vector<std::shared_ptr<PieceStatement>> v;
+        for (int i = 0; i < ast->statements.size(); i++) {
+            if (ast->statements[i]->get_type() == PIECE) {
+                v.push_back(std::dynamic_pointer_cast<PieceStatement>(ast->statements[i]));
+            }
+        }
+        return v;
     }
 }

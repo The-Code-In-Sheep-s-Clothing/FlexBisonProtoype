@@ -41,11 +41,11 @@
 %token NEWLINE
 
 /* Rule types */
-%type <Block> stmt_list piece_block turn_block win_block end_block
-%type <Block> function_call_list piece_block_stmt_list
-%type <Stmt> stmt game_stmt players_stmt board_stmt piece_block_stmt
+%type <Block> stmt_list turn_block win_block end_block
+%type <Block> function_call_list
+%type <Stmt> stmt game_stmt players_stmt board_stmt piece_stmt
 %type <Exp> expression function_call
-%type <ArgList> function_arg_list function_opt_arg_list
+%type <ArgList> function_arg_list function_opt_arg_list piece_stmt_display_list
 
 %start program
 
@@ -66,7 +66,7 @@ stmt
     : game_stmt
     | players_stmt
     | board_stmt
-    | piece_block { $$ = (ast::Statement *)$1; }
+    | piece_stmt
     | turn_block { $$ = (ast::Statement *)$1; }
     | win_block { $$ = (ast::Statement *)$1; }
     | end_block { $$ = (ast::Statement *)$1; }
@@ -83,21 +83,21 @@ board_stmt: BOARD STR_LIT INT_LIT INT_LIT NEWLINE {
                                  ast::NumberNode($3),
                                  ast::NumberNode($4)); 
 };
-/* Piece block */
-piece_block: PIECE STR_LIT INT_LIT NEWLINE INDENT piece_block_stmt_list DEDENT { 
-    ((ast::PieceBlock *)$6)->set_name(ast::StringNode(*$2));
-    ((ast::PieceBlock *)$6)->set_num(ast::NumberNode($3));
-    $$ = $6; 
+/* Piece stmt */
+piece_stmt: PIECE STR_LIT INT_LIT piece_stmt_display_list NEWLINE { 
+    $$ = new ast::PieceStatement(ast::StringNode(*$2), ast::NumberNode($3), *$4);
 };
-
-piece_block_stmt_list
-    : piece_block_stmt { $$ = new ast::PieceBlock(std::shared_ptr<ast::Statement>($1)); }
-    | piece_block_stmt_list piece_block_stmt { $1->add(std::shared_ptr<ast::Statement>($2)); $$ = $1; }
+piece_stmt_display_list
+    : STR_LIT { 
+            std::vector<std::shared_ptr<ast::Expression>> *temp = new std::vector<std::shared_ptr<ast::Expression>>;
+            temp->push_back(std::shared_ptr<ast::Expression>(new ast::StringNode(*$1)));
+            $$ = temp;
+        }
+    | piece_stmt_display_list STR_LIT { 
+            $1->push_back(std::shared_ptr<ast::Expression>(new ast::StringNode(*$2))); 
+            $$ = $1;
+        }
     ;
-
-piece_block_stmt: PLAYER INT_LIT STR_LIT NEWLINE { 
-    $$ = new ast::PlayerPieceStatement(ast::NumberNode($2), ast::StringNode(*$3)); 
-};
 
 /* Turn block */
 turn_block: TURN NEWLINE INDENT function_call_list DEDENT {
