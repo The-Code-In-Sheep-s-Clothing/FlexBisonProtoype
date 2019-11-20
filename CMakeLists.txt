@@ -33,4 +33,5 @@ add_test(test ${CMAKE_SOURCE_DIR}/test/test.py)
 OPTION(ScannerDebug "Enables scanner debug messages" OFF) # Disabled by default
 IF(ScannerDebug)
     ADD_DEFINITIONS(-DScannerDebug)
+    set(CMAKE_CXX_FLAGS "-g")
 ENDIF(ScannerDebug)

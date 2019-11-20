@@ -4,18 +4,38 @@
 #include <memory>
 #include <vector>
 #include "ast.hpp"
-#include "interpreter.hpp"
 
 namespace builtins {
+    class PieceObj {
+        public:
+            int num;
+            std::string name;
+            std::string display;
+            PieceObj();
+            PieceObj(int, std::string, std::string);
+    };
+    class GamePiece {
+        public:
+            int owner;
+            std::shared_ptr<PieceObj> desc;
+            GamePiece();
+            GamePiece(int, std::shared_ptr<PieceObj>);
+    };
+    class GameState {
+        public:
+            int current_player;
+            std::vector<std::vector<std::shared_ptr<GamePiece>>> board;
+            std::vector<std::vector<std::shared_ptr<PieceObj>>> pieces;
+    };
     struct func_descriptor {
         std::string name;
-        void *(*func)(interpreter::GameState &, 
+        void *(*func)(GameState &, 
                       std::vector<std::shared_ptr<ast::Expression>>);
         std::vector<ast::Types> args;
         ast::Types ret;
         func_descriptor();
         func_descriptor(std::string, 
-                        void *(*)(interpreter::GameState &,
+                        void *(*)(GameState &,
                                   std::vector<std::shared_ptr<ast::Expression>>),
                         std::vector<ast::Types>,
                         ast::Types);
@@ -24,13 +44,13 @@ namespace builtins {
 
     const func_descriptor * map_func(std::string);
 
-    void * in_a_row(interpreter::GameState &,
+    void * in_a_row(GameState &,
                     std::vector<std::shared_ptr<ast::Expression>>);
 
     const std::vector<func_descriptor> func_map = {
         func_descriptor("InARow", in_a_row, 
                         std::vector<ast::Types>({ast::NUMBER, ast::STRING, ast::STRING}), 
-                        ast::NUMBER),
+                        ast::NUMBER)
     };
 }
 #endif

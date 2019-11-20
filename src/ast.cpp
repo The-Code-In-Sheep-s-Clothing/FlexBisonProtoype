@@ -6,7 +6,6 @@
 #include "builtins.hpp"
 
 namespace ast {
-
     PrintContext::PrintContext() {
         this->indent_level = 0;
     }
@@ -207,6 +206,10 @@ namespace ast {
         this->statements.push_back(s);
         this->type = TURN;
     }
+    TurnBlock::TurnBlock(std::vector<std::shared_ptr<Statement>> stmts) {
+        this->statements = stmts;
+        this->type = TURN;
+    }
     void TurnBlock::print_imp(std::ostream &o) {
         o << "Turn: " << std::endl;
     }
@@ -218,6 +221,10 @@ namespace ast {
     }
     WinBlock::WinBlock(std::shared_ptr<Statement> s) {
         this->statements.push_back(s);
+        this->type = WIN;
+    }
+    WinBlock::WinBlock(std::vector<std::shared_ptr<Statement>> stmts) {
+        this->statements = stmts;
         this->type = WIN;
     }
     void WinBlock::print_imp(std::ostream &o) {
@@ -232,6 +239,10 @@ namespace ast {
     }
     EndBlock::EndBlock(std::shared_ptr<Statement> s) {
         this->statements.push_back(s);
+        this->type = END;
+    }
+    EndBlock::EndBlock(std::vector<std::shared_ptr<Statement>> stmts) {
+        this->statements = stmts;
         this->type = END;
     }
     void EndBlock::print_imp(std::ostream &o) {
@@ -264,5 +275,13 @@ namespace ast {
             }
         }
         return v;
+    }
+    std::vector<std::shared_ptr<Statement>> get_statements(Block * ast, Types type) {
+        for (int i = 0; i < ast->statements.size(); i++) {
+            if (ast->statements[i]->get_type() == type) {
+                return std::dynamic_pointer_cast<Block>(ast->statements[i])->statements;
+            }
+        }
+        return std::vector<std::shared_ptr<Statement>>();
     }
 }
