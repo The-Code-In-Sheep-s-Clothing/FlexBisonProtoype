@@ -25,6 +25,7 @@ namespace ast {
             Types type;
         public:
             Types get_type();
+            // virtual std::shared_ptr<Expression> evaluate(interpreter::GameState);
     };
     class Expression : public Statement {};
 
@@ -63,6 +64,7 @@ namespace ast {
             FunctionCallExpression(); 
             FunctionCallExpression(StringNode, std::vector<std::shared_ptr<Expression>>); 
             virtual void print(std::ostream &) override;
+            // virtual std::shared_ptr<Expression> evaluate(interpreter::GameState) override;
     };
     // End function call
 

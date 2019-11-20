@@ -22,11 +22,15 @@ namespace builtins {
 
     };
 
+    const func_descriptor * map_func(std::string);
+
     void * in_a_row(interpreter::GameState &,
                     std::vector<std::shared_ptr<ast::Expression>>);
 
     const std::vector<func_descriptor> func_map = {
-        func_descriptor("InARow", in_a_row, std::vector<ast::Types>(ast::NUMBER), ast::NUMBER),
+        func_descriptor("InARow", in_a_row, 
+                        std::vector<ast::Types>({ast::NUMBER, ast::STRING, ast::STRING}), 
+                        ast::NUMBER),
     };
 }
 #endif

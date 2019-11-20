@@ -33,7 +33,10 @@ namespace ast {
     Types Statement::get_type() {
         return this->type;
     }
-
+    // std::shared_ptr<Expression> Statement::evaluate(interpreter::GameState) {
+    //     std::cout << "ERROR: this should be inherited" << std::endl; 
+    //     return NULL;
+    // }
     // NumberNode
     NumberNode::NumberNode() {
         this->value = 0;

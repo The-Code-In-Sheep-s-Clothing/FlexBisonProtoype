@@ -15,6 +15,14 @@ namespace builtins {
         this->args = args;
         this->ret = ret;
     }
+    const func_descriptor * map_func(std::string n) {
+        for (int i = 0; i < func_map.size(); i++) {
+            if (func_map[i].name == n) {
+                return &(func_map[i]);
+            }
+        } 
+        return NULL;
+    }
     void * in_a_row(interpreter::GameState &,
                     std::vector<std::shared_ptr<ast::Expression>> args) {
         std::shared_ptr<ast::NumberNode> num = std::dynamic_pointer_cast<ast::NumberNode>(args[0]);

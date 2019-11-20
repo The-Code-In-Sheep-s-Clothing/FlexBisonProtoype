@@ -24,10 +24,15 @@ namespace interpreter {
         this->state.current_player = 0;
     }
     void Interpreter::run() {
-        // this->game_loop();
+        this->game_loop();
     }
     void Interpreter::game_loop() {
+        while (!this->check_end()) {
 
+        }
+    }
+    bool Interpreter::check_end() {
+        return true;
     }
     void Interpreter::make_board(std::shared_ptr<ast::BoardStatement> b) {
         std::vector<std::vector<std::shared_ptr<GamePiece>>> board = 
