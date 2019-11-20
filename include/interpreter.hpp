@@ -19,13 +19,17 @@ namespace interpreter {
             GamePiece();
             GamePiece(int, std::shared_ptr<PieceObj>);
     };
+    class GameState {
+        public:
+            int current_player;
+            std::vector<std::vector<std::shared_ptr<GamePiece>>> board;
+            std::vector<std::vector<std::shared_ptr<PieceObj>>> pieces;
+    };
     class Interpreter {
         std::shared_ptr<ast::Block> ast;
         std::string game;
         int players;
-        std::vector<std::vector<std::shared_ptr<GamePiece>>> board;
-        std::vector<std::vector<std::shared_ptr<PieceObj>>> pieces;
-
+        GameState state;
         void game_loop();
         void make_board(std::shared_ptr<ast::BoardStatement>);
         void make_pieces(std::vector<std::shared_ptr<ast::PieceStatement>>);

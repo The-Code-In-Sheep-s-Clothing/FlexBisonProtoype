@@ -6,26 +6,23 @@
 #include "ast.hpp"
 #include "interpreter.hpp"
 
-extern std::shared_ptr<ast::BoardStatement> board;
-extern std::shared_ptr<ast::PlayersStatement> players;
-
 namespace builtins {
     struct func_descriptor {
         std::string name;
-        void *(*func)(std::vector<std::vector<std::shared_ptr<interpreter::GamePiece>>> &, 
+        void *(*func)(interpreter::GameState &, 
                       std::vector<std::shared_ptr<ast::Expression>>);
         std::vector<ast::Types> args;
         ast::Types ret;
         func_descriptor();
         func_descriptor(std::string, 
-                        void *(*)(std::vector<std::vector<std::shared_ptr<interpreter::GamePiece>>> &,
+                        void *(*)(interpreter::GameState &,
                                   std::vector<std::shared_ptr<ast::Expression>>),
                         std::vector<ast::Types>,
                         ast::Types);
 
     };
 
-    void * in_a_row(std::vector<std::vector<std::shared_ptr<interpreter::GamePiece>>> &,
+    void * in_a_row(interpreter::GameState &,
                     std::vector<std::shared_ptr<ast::Expression>>);
 
     const std::vector<func_descriptor> func_map = {
