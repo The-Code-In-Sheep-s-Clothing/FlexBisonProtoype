@@ -127,9 +127,7 @@ namespace builtins {
                 }
             }
         }
-
-        std::cout <<"FUNCTION CALL SUCESS" << std::endl;
-        return NULL;
+        return new ast::NumberNode(0);
     }
 
     void *place(GameState &gs, std::vector<std::shared_ptr<ast::Expression>> args){
