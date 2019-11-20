@@ -20,7 +20,7 @@ namespace interpreter {
         while (true) {
             for (int i = 0; i < this->players; i++) {
                 this->print_board();
-                this->state.current_player = i + 1;    
+                this->state.current_player = i;    
                 std::cout << "It is Player " << this->state.current_player << "'s turn." << std::endl;
                 this->take_turn();
                 if (this->check_end())
@@ -54,7 +54,7 @@ namespace interpreter {
                 if (this->state.board[i][j])
                     std::cout << this->state.board[i][j]->owner << " ";
                 else
-                    std::cout << "0 ";
+                    std::cout << "E ";
             }
             std::cout << std::endl;
         }
