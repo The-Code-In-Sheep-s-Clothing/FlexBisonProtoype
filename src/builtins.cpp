@@ -173,11 +173,11 @@ namespace builtins {
     void *is_full(GameState &gs, std::vector<std::shared_ptr<ast::Expression>> args){
         for(std::vector<std::shared_ptr<PieceObj>> piecetype : gs.pieces){
             for(std::shared_ptr<PieceObj> piece : piecetype){
-                if(piece != NULL){
-                    return new ast::NumberNode(1);
+                if(piece == NULL){
+                    return new ast::NumberNode(0);
                 }
             }
         }
-        return new ast::NumberNode(0);
+        return new ast::NumberNode(1);
     }
 }

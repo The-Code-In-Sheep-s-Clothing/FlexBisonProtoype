@@ -17,14 +17,17 @@ namespace interpreter {
     }
     void Interpreter::game_loop() {
         std::cout << "Playing Game" << std::endl;
-        while (true) {
+        bool playing = true;
+        while (playing) {
             for (int i = 0; i < this->players; i++) {
                 this->print_board();
                 this->state.current_player = i;    
                 std::cout << "It is Player " << this->state.current_player << "'s turn." << std::endl;
                 this->take_turn();
-                if (this->check_end())
+                if (this->check_end()) {
+                    playing = false;
                     break;
+                }
             }
         }
         std::cout << "Player " << this->get_winner() << " wins!" << std::endl;
@@ -49,7 +52,12 @@ namespace interpreter {
             desc->func(this->state, f->args);
     }
     void Interpreter::print_board() {
+        std::cout << "  ";
+        for (int i = 0; i < this->state.board[0].size(); i++)
+            std::cout << i << " ";
+        std::cout << std::endl;
         for (int i = 0; i < this->state.board.size(); i++) {
+            std::cout << i << " ";
             for (int j = 0; j < this->state.board[i].size(); j++) {
                 if (this->state.board[i][j])
                     std::cout << this->state.board[i][j]->owner << " ";
@@ -82,12 +90,13 @@ namespace interpreter {
             const builtins::func_descriptor *desc = builtins::map_func(f->name.get_value());
             if (desc) {
                 std::shared_ptr<ast::NumberNode> ret((ast::NumberNode *)desc->func(this->state, f->args));
-                if (!ret->get_value()) {
-                    return false;
+                if (ret->get_value()) {
+                    std::cout << desc->name << std::endl;
+                    return true;
                 }
             }
         }
-        return true;
+        return false;
     }
     void Interpreter::make_board(std::shared_ptr<ast::BoardStatement> b) {
         std::vector<std::vector<std::shared_ptr<builtins::GamePiece>>> board = 
