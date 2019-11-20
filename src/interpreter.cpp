@@ -17,7 +17,7 @@ namespace interpreter {
     }
     void Interpreter::game_loop() {
         std::cout << "Playing Game" << std::endl;
-        // while (true) {
+        while (true) {
             for (int i = 0; i < this->players; i++) {
                 this->print_board();
                 this->state.current_player = i + 1;    
@@ -26,11 +26,27 @@ namespace interpreter {
                 if (this->check_end())
                     break;
             }
-        // }
+        }
         std::cout << "Player " << this->get_winner() << " wins!" << std::endl;
     }
     void Interpreter::take_turn() {
-        
+        std::cout << "Turn options:" << std::endl;
+        std::vector<std::shared_ptr<ast::Statement>> statements = 
+            ast::get_statements(this->ast.get(), ast::TURN);
+        int choice;
+        for (int i = 0; i < statements.size(); i++) {
+            std::shared_ptr<ast::FunctionCallExpression> f = 
+                std::dynamic_pointer_cast<ast::FunctionCallExpression>(statements[i]);
+            const builtins::func_descriptor *desc = builtins::map_func(f->name.get_value());
+            if (desc)
+                std::cout << i << ": " << desc->name << std::endl;
+        }
+        std::cin >> choice;
+        std::shared_ptr<ast::FunctionCallExpression> f = 
+            std::dynamic_pointer_cast<ast::FunctionCallExpression>(statements[choice]);
+        const builtins::func_descriptor *desc = builtins::map_func(f->name.get_value());
+        if (desc)
+            desc->func(this->state, f->args);
     }
     void Interpreter::print_board() {
         for (int i = 0; i < this->state.board.size(); i++) {
