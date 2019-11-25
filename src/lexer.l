@@ -3,11 +3,13 @@
     #include <string>
     #include <cstdlib>
     #include <stack>
+    #include <queue>
     //#include "parser.hpp"
 
     #define PRINT(a) std::cout << a << std::endl
     using namespace std;
     stack <int> s;
+    std::queue<int> q;
 
 %}
 
@@ -16,6 +18,25 @@
 %option noyywrap
 
 %%
+
+%{
+  /*
+   * These lines go at the top of the lexing function.  We only want to
+   * initialize the indentation level stack once by pushing a 0 onto it (the
+   * indentation stack should never be empty, except immediately after it is
+   * created).
+   */
+  if (s.empty()) {
+    s.push(0);
+  }
+  if(!q.empty()){
+      int temp = q.front();
+      q.pop();
+
+      return(yylval.category = temp);
+  }
+%}
+
 
 [/]{2}.*                // Ignore comments
 ^[ \t]+[\n\r]+          // Ignore empty lines
@@ -30,37 +51,26 @@
 "{" |
 "}" { return yytext[0]; }
 
-\n[^ \t\n] {
-        cout << "NEWLINE" << endl;
-        if(yytext[strlen(yytext) - 1] != '\n'){
-            unput(yytext[strlen(yytext) - 1]);
-        }
+^[^ \t\n]+ {
+
         yyleng = 0;
         if(yyleng == s.top()){
 
         }else{
-            int dedents = -1;
-            for(int i = 0; 0 < s.size(); i++){
-                if(yyleng == s.top()){
-                    dedents = i;
-                    break;
-                }
-                s.pop();
+          while(s.top() != 0){
+              q.push(DEDENT);
+              s.pop();
+          }
+          for(int i = strlen(yytext); i > 0; i--){
+              unput(yytext[i-1]);
+          }
+          int temp = q.front();
+          q.pop();
 
-            }
-
-            if(dedents == -1)
-                cout << "ERROR, INVALID DEDENT" << endl;
-            else{
-                for(int i = 0; i < dedents; i++){
-                    cout << "DEDENT" << endl;
-                }
-            }
-
-
-        }
-
+          return(yylval.category = temp);
+          REJECT;
     }
+}
 
 ^[ \t]+ {
     if(yyleng == s.top()){
@@ -68,7 +78,7 @@
     }else{
         if(yyleng > s.top()){
             s.push(yyleng);
-            cout << "INDENT" << endl;
+            return(yylval.category = INDENT);
 
         }else{
 
@@ -86,8 +96,11 @@
                 cout << "ERROR, INVALID DEDENT" << endl;
             else{
                 for(int i = 0; i < dedents; i++){
-                    cout << "DEDENT" << endl;
+                    q.push(DEDENT);
                 }
+                int temp = q.front();
+                q.pop();
+                return (yylval.category = temp);
             }
         }
 
@@ -112,8 +125,13 @@
 <<EOF>> {
     s.pop();
     while(!s.empty()){
-        cout << "DEDENT" << endl;
+        q.push(DEDENT);
         s.pop();
+    }
+    if(!q.empty()){
+      int temp = q.front();
+      q.pop();
+      return (yylval.category = temp);
     }
     return 0;
 }
