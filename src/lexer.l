@@ -4,6 +4,7 @@
     #include <cstdlib>
     #include "parser.hpp"
 
+    #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno;
     #define PRINT(a) std::cout << a << std::endl
 %}
 
@@ -44,6 +45,6 @@
 }
 
 . {
-    PRINT("Unexpected Character");
+    std::cout << "ERROR line " << yylloc.first_line << ": " << "Unexpected character" << yytext << std::endl;
 }
 %%

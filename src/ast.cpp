@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include "ast.hpp"
+#include "builtins.hpp"
 
 namespace ast {
 
@@ -28,12 +29,19 @@ namespace ast {
         this->print(o);
     }
 
+    // Statement
+    Types Statement::get_type() {
+        return this->type;
+    }
+
     // NumberNode
     NumberNode::NumberNode() {
         this->value = 0;
+        this->type = NUMBER;
     }
     NumberNode::NumberNode(int n) {
         this->value = n;
+        this->type = NUMBER;
     }
     int NumberNode::get_value() const {
         return this->value;
@@ -46,9 +54,11 @@ namespace ast {
     // StringNode
     StringNode::StringNode() {
         this->value = "";
+        this->type = STRING;
     }
     StringNode::StringNode(std::string s) {
         this->value = s;
+        this->type = STRING;
     }
     std::string StringNode::get_value() const {
         return this->value;
@@ -58,13 +68,38 @@ namespace ast {
     }
     // End string node
 
+    // function call
+    FunctionCallExpression::FunctionCallExpression() {}
+    FunctionCallExpression::FunctionCallExpression(StringNode name, std::vector<std::shared_ptr<Expression>> args) {
+        this->name = name;
+        this->args = args;
+        for (int i = 0; i < builtins::func_map.size(); i++) {
+            if (builtins::func_map[i].name == name.get_value()) {
+                builtins::func_map[i].func(args);
+            }
+        }
+    }
+    void FunctionCallExpression::print(std::ostream &o) {
+        o << "func ";
+        this->name.print(o);
+        o << ", args = { ";
+        for (int i = 0; i < this->args.size(); i++) {
+            this->args[i]->print(o);
+            o << ", ";
+        }
+        o << "}" << std::endl;
+    }
+    // End function call
+
     // Block statement
     Block::Block() {}
     Block::Block(std::shared_ptr<Statement> s) {
         this->statements.push_back(s);
+        this->type = STATEMENT;
     }
     Block::Block(std::vector<std::shared_ptr<Statement>> s) {
         this->statements = s;
+        this->type = STATEMENT;
     }
     void Block::add(std::shared_ptr<Statement> s) {
         this->statements.push_back(s);
@@ -104,9 +139,11 @@ namespace ast {
     // PlayersStatement
     PlayersStatement::PlayersStatement() {
         this->num = NumberNode();
+        this->type = PLAYERS;
     }
     PlayersStatement::PlayersStatement(NumberNode n) {
         this->num = n;
+        this->type = PLAYERS;
     }
     void PlayersStatement::print(std::ostream &o) {
         o << "players: { number = ";
@@ -120,11 +157,13 @@ namespace ast {
         this->name = StringNode();
         this->x = NumberNode();
         this->y = NumberNode();
+        this->type = BOARD;
     }
     BoardStatement::BoardStatement(StringNode s, NumberNode x, NumberNode y) {
         this->name = s;
         this->x = x;
         this->y = y;
+        this->type = BOARD;
     }
     void BoardStatement::print(std::ostream &o) {
         o << "board: ";
@@ -196,4 +235,32 @@ namespace ast {
         o << " }" << std::endl;
     }
     // End turn block
+
+    // Win block
+    WinBlock::WinBlock() {}
+    WinBlock::WinBlock(std::shared_ptr<Statement> s) {
+        this->statements.push_back(s);
+    }
+    void WinBlock::print_imp(std::ostream &o) {
+        o << "Win: " << std::endl;
+    }
+    // End Win Block
+    
+    // ast related functions
+    std::shared_ptr<BoardStatement> get_board(Block * ast) {
+        for (int i = 0; i < ast->statements.size(); i++) {
+            if (ast->statements[i]->get_type() == BOARD) {
+                return std::dynamic_pointer_cast<BoardStatement>(ast->statements[i]);
+            }
+        }
+        return NULL;
+    }
+    std::shared_ptr<PlayersStatement> get_players(Block * ast) {
+        for (int i = 0; i < ast->statements.size(); i++) {
+            if (ast->statements[i]->get_type() == PLAYERS) {
+                return std::dynamic_pointer_cast<PlayersStatement>(ast->statements[i]);
+            }
+        }
+        return NULL;
+    }
 }

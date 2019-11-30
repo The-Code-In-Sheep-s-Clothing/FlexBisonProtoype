@@ -19,6 +19,8 @@
     std::string * Str;
     ast::Statement * Stmt;
     ast::Block * Block;
+    ast::Expression * Exp;
+    std::vector<std::shared_ptr<ast::Expression>> * ArgList;
 }
 
 /* Primitives  */
@@ -41,8 +43,10 @@
 /* Rule types */
 %type <Block> stmt_list piece_block turn_block win_block
 %type <Block> piece_block_stmt_list turn_block_stmt_list win_block_stmt_list
-%type <Stmt> stmt game_stmt players_stmt board_stmt
-%type <Stmt> piece_block_stmt turn_block_stmt win_block_stmt
+%type <Stmt> stmt game_stmt players_stmt board_stmt win_block_stmt
+%type <Stmt> piece_block_stmt turn_block_stmt
+%type <Exp> expression function_call
+%type <ArgList> function_arg_list
 
 %start program
 
@@ -65,7 +69,7 @@ stmt
     | board_stmt
     | piece_block { $$ = (ast::Statement *)$1; }
     | turn_block { $$ = (ast::Statement *)$1; }
-    /* | win_block { $$ = (ast::Statement *)$1; } */
+    | win_block { $$ = (ast::Statement *)$1; }
     ;
 
 game_stmt: GAME STR_LIT NEWLINE {
@@ -119,15 +123,33 @@ win_block_stmt_list
     | win_block_stmt_list win_block_stmt { $1->add(std::shared_ptr<ast::Statement>($2)); $$ = $1; }
     ;
 
-win_block_stmt: INT_LIT STR_LIT STR_LIT STR_LIT NEWLINE {
-    $$ = new ast::WinConditionStatement(ast::NumberNode($1), 
-                                        ast::StringNode(*$2),
-                                        ast::StringNode(*$3),
-                                        ast::StringNode(*$4));
+win_block_stmt: function_call { $$ = $1; };
+
+function_call: STR_LIT function_arg_list NEWLINE { 
+    $$ = new ast::FunctionCallExpression(ast::StringNode(*$1), *$2); 
 }
+
+expression
+    : STR_LIT { $$ = new ast::StringNode(*$1); }
+    | INT_LIT { $$ = new ast::NumberNode($1); }
+    /* | function_call { $$ = $1; } */
+    ;
+
+/* Kinda Gross */
+function_arg_list
+    : expression { 
+            std::vector<std::shared_ptr<ast::Expression>> *temp = new std::vector<std::shared_ptr<ast::Expression>>;
+            temp->push_back(std::shared_ptr<ast::Expression>($1));
+            $$ = temp;
+        }
+    | function_arg_list expression { 
+            $1->push_back(std::shared_ptr<ast::Expression>($2)); 
+            $$ = $1;
+        }
+    ;
 
 %%
 
 void yyerror(ast::Block **ast, const char* err) {
-    std::cerr << "Parser error: " << err << std::endl;
+    std::cerr << "ERROR line " << yylloc.first_line << ": " << err << std::endl;
 }

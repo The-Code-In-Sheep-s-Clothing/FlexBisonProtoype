@@ -6,6 +6,7 @@
 #include <vector>
 
 namespace ast {
+    enum Types { NUMBER, STRING, BOARD, PLAYERS, STATEMENT };
     class PrintContext {
         int indent_level;
         public:
@@ -19,8 +20,13 @@ namespace ast {
             virtual void print(std::ostream &);
             virtual void print(std::ostream &, PrintContext &);
     };
-    class Expression : public Node {};
-    class Statement : public Node {};
+    class Statement : public Node {
+        protected:
+            Types type;
+        public:
+            Types get_type();
+    };
+    class Expression : public Statement {};
 
     // Primitives
     class NumberNode : public Expression {
@@ -49,12 +55,22 @@ namespace ast {
 
     };
 
+    // function call
+    class FunctionCallExpression : public Expression {
+        StringNode name;
+        std::vector<std::shared_ptr<Expression>> args;
+        public:
+            FunctionCallExpression(); 
+            FunctionCallExpression(StringNode, std::vector<std::shared_ptr<Expression>>); 
+            virtual void print(std::ostream &) override;
+    };
+    // End function call
+
     // Statements
     class Block : public Statement {
         virtual void print_imp(std::ostream &);
-        protected:
-            std::vector<std::shared_ptr<Statement>> statements;
         public:
+            std::vector<std::shared_ptr<Statement>> statements;
             Block();
             Block(std::shared_ptr<Statement>);
             Block(std::vector<std::shared_ptr<Statement>>);
@@ -123,17 +139,14 @@ namespace ast {
 
     // Win Block
     class WinBlock : public Block {
-        StringNode name;
         public:
             WinBlock();
+            WinBlock(std::shared_ptr<Statement>);
             virtual void print_imp(std::ostream &) override;
     };
-    class WinConditionStatement : public Statement {
-        StringNode name;
-        public:
-            WinConditionStatement();
-            WinConditionStatement();
-            virtual void print(std::ostream &) override;
-    };
+
+    // ast related functions
+    std::shared_ptr<BoardStatement> get_board(Block *);
+    std::shared_ptr<PlayersStatement> get_players(Block *);
 }
 #endif

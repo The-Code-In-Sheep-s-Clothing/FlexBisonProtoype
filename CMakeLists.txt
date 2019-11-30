@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.10)
 
 enable_testing()
 
@@ -24,6 +24,8 @@ add_executable(bgcc
     ${FLEX_Scanner_OUTPUTS}
     src/main.cpp
     src/ast.cpp
+    src/builtins.cpp
+    src/interpreter.cpp
 )
 
 add_test(test ${CMAKE_SOURCE_DIR}/test/test.py)
