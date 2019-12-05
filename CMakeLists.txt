@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -ggdb")
 enable_testing()
 
 # set the project name
@@ -29,3 +29,8 @@ add_executable(bgcc
 )
 
 add_test(test ${CMAKE_SOURCE_DIR}/test/test.py)
+
+OPTION(ScannerDebug "Enables scanner debug messages" OFF) # Disabled by default
+IF(ScannerDebug)
+    ADD_DEFINITIONS(-DScannerDebug)
+ENDIF(ScannerDebug)
