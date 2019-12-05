@@ -29,10 +29,10 @@
 %token <Boolean> BOOL_LIT
 
 /* Top-level Statement types */
-%token GAME PLAYERS PLAYER BOARD PIECE TURN WIN END
+%token GAME PLAYERS PLAYER BOARD PIECE TURN WIN END INDENT DEDENT
 
 /* Piece actions */
-%token PLACE
+/* %token PLACE */
 /* TODO */
 /* %token MOVE */
 /* %token REMOVE */
@@ -45,7 +45,7 @@
 %type <Block> function_call_list piece_block_stmt_list
 %type <Stmt> stmt game_stmt players_stmt board_stmt piece_block_stmt
 %type <Exp> expression function_call
-%type <ArgList> function_arg_list
+%type <ArgList> function_arg_list function_opt_arg_list
 
 %start program
 
@@ -84,7 +84,7 @@ board_stmt: BOARD STR_LIT INT_LIT INT_LIT NEWLINE {
                                  ast::NumberNode($4)); 
 };
 /* Piece block */
-piece_block: PIECE STR_LIT INT_LIT '{' NEWLINE piece_block_stmt_list '}' NEWLINE { 
+piece_block: PIECE STR_LIT INT_LIT NEWLINE INDENT piece_block_stmt_list DEDENT { 
     ((ast::PieceBlock *)$6)->set_name(ast::StringNode(*$2));
     ((ast::PieceBlock *)$6)->set_num(ast::NumberNode($3));
     $$ = $6; 
@@ -100,23 +100,28 @@ piece_block_stmt: PLAYER INT_LIT STR_LIT NEWLINE {
 };
 
 /* Turn block */
-turn_block: TURN '{' NEWLINE function_call_list '}' NEWLINE {
+turn_block: TURN NEWLINE INDENT function_call_list DEDENT {
     $$ = $4;
 };
 
 /* Win Block */
-win_block: WIN '{' NEWLINE function_call_list '}' NEWLINE {
+win_block: WIN NEWLINE INDENT function_call_list DEDENT {
     $$ = $4;
 };
 
 /* End Block */
-end_block: END '{' NEWLINE function_call_list '}' NEWLINE {
+end_block: END NEWLINE INDENT function_call_list DEDENT {
     $$ = $4;
-}
+};
 
-function_call: STR_LIT function_arg_list NEWLINE { 
-    $$ = new ast::FunctionCallExpression(ast::StringNode(*$1), *$2); 
-}
+function_call
+    : STR_LIT function_opt_arg_list NEWLINE { $$ = new ast::FunctionCallExpression(ast::StringNode(*$1), *$2); }
+    ;
+
+function_opt_arg_list
+    : function_arg_list {$$ = $1;}
+    | {$$ = new std::vector<std::shared_ptr<ast::Expression>>(); }
+    ;
 
 function_call_list
     : function_call { $$ = new ast::WinBlock(std::shared_ptr<ast::Statement>($1)); }
