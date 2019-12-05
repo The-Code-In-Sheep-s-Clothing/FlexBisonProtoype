@@ -101,17 +101,17 @@ piece_block_stmt: PLAYER INT_LIT STR_LIT NEWLINE {
 
 /* Turn block */
 turn_block: TURN NEWLINE INDENT function_call_list DEDENT {
-    $$ = $4;
+    $$ = (ast::TurnBlock *)$4;
 };
 
 /* Win Block */
 win_block: WIN NEWLINE INDENT function_call_list DEDENT {
-    $$ = $4;
+    $$ = (ast::WinBlock *)$4;
 };
 
 /* End Block */
 end_block: END NEWLINE INDENT function_call_list DEDENT {
-    $$ = $4;
+    $$ = (ast::EndBlock *)$4;
 };
 
 function_call
@@ -124,7 +124,7 @@ function_opt_arg_list
     ;
 
 function_call_list
-    : function_call { $$ = new ast::WinBlock(std::shared_ptr<ast::Statement>($1)); }
+    : function_call { $$ = new ast::Block(std::shared_ptr<ast::Statement>($1)); }
     | function_call_list function_call { $1->add(std::shared_ptr<ast::Statement>($2)); $$ = $1; }
     ;
 
