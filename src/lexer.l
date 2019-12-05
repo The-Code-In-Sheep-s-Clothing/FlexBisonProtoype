@@ -25,7 +25,6 @@
 "Turn"    { return TURN; }
 "Win"     { return WIN; }
 "End"     { return END; }
-"Place"   { return PLACE; }
 
 "{" |
 "}" { return yytext[0]; }

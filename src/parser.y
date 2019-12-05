@@ -41,10 +41,9 @@
 %token NEWLINE
 
 /* Rule types */
-%type <Block> stmt_list piece_block turn_block win_block
-%type <Block> piece_block_stmt_list turn_block_stmt_list win_block_stmt_list
-%type <Stmt> stmt game_stmt players_stmt board_stmt win_block_stmt
-%type <Stmt> piece_block_stmt turn_block_stmt
+%type <Block> stmt_list piece_block turn_block win_block end_block
+%type <Block> function_call_list piece_block_stmt_list
+%type <Stmt> stmt game_stmt players_stmt board_stmt piece_block_stmt
 %type <Exp> expression function_call
 %type <ArgList> function_arg_list
 
@@ -70,6 +69,7 @@ stmt
     | piece_block { $$ = (ast::Statement *)$1; }
     | turn_block { $$ = (ast::Statement *)$1; }
     | win_block { $$ = (ast::Statement *)$1; }
+    | end_block { $$ = (ast::Statement *)$1; }
     ;
 
 game_stmt: GAME STR_LIT NEWLINE {
@@ -100,34 +100,28 @@ piece_block_stmt: PLAYER INT_LIT STR_LIT NEWLINE {
 };
 
 /* Turn block */
-turn_block: TURN '{' NEWLINE turn_block_stmt_list '}' NEWLINE {
+turn_block: TURN '{' NEWLINE function_call_list '}' NEWLINE {
     $$ = $4;
 };
-
-turn_block_stmt_list
-    : turn_block_stmt { $$ = new ast::TurnBlock(std::shared_ptr<ast::Statement>($1)); }
-    | turn_block_stmt_list turn_block_stmt { $1->add(std::shared_ptr<ast::Statement>($2)); $$ = $1; }
-    ;
-
-turn_block_stmt: PLACE STR_LIT STR_LIT NEWLINE {
-    $$ = new ast::PlaceTurnStatement(ast::StringNode(*$2), ast::StringNode(*$3));
-}
 
 /* Win Block */
-win_block: WIN '{' NEWLINE win_block_stmt_list '}' NEWLINE {
+win_block: WIN '{' NEWLINE function_call_list '}' NEWLINE {
     $$ = $4;
 };
 
-win_block_stmt_list
-    : win_block_stmt { $$ = new ast::WinBlock(std::shared_ptr<ast::Statement>($1)); }
-    | win_block_stmt_list win_block_stmt { $1->add(std::shared_ptr<ast::Statement>($2)); $$ = $1; }
-    ;
-
-win_block_stmt: function_call { $$ = $1; };
+/* End Block */
+end_block: END '{' NEWLINE function_call_list '}' NEWLINE {
+    $$ = $4;
+}
 
 function_call: STR_LIT function_arg_list NEWLINE { 
     $$ = new ast::FunctionCallExpression(ast::StringNode(*$1), *$2); 
 }
+
+function_call_list
+    : function_call { $$ = new ast::WinBlock(std::shared_ptr<ast::Statement>($1)); }
+    | function_call_list function_call { $1->add(std::shared_ptr<ast::Statement>($2)); $$ = $1; }
+    ;
 
 expression
     : STR_LIT { $$ = new ast::StringNode(*$1); }
