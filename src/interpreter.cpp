@@ -31,6 +31,7 @@ namespace interpreter {
             }
         }
         std::cout << "Player " << this->get_winner() << " wins!" << std::endl;
+        this->print_board();
     }
     void Interpreter::take_turn() {
         std::cout << "Turn options:" << std::endl;
@@ -45,6 +46,7 @@ namespace interpreter {
                 std::cout << i << ": " << desc->name << std::endl;
         }
         std::cin >> choice;
+        // TODO error handling
         std::shared_ptr<ast::FunctionCallExpression> f = 
             std::dynamic_pointer_cast<ast::FunctionCallExpression>(statements[choice]);
         const builtins::func_descriptor *desc = builtins::map_func(f->name.get_value());
@@ -59,10 +61,11 @@ namespace interpreter {
         for (int i = 0; i < this->state.board.size(); i++) {
             std::cout << i << " ";
             for (int j = 0; j < this->state.board[i].size(); j++) {
-                if (this->state.board[i][j])
-                    std::cout << this->state.board[i][j]->owner << " ";
-                else
+                if (this->state.board[i][j]) {
+                    std::cout << this->state.board[i][j]->desc->display << " ";
+                } else {
                     std::cout << "E ";
+                }
             }
             std::cout << std::endl;
         }
