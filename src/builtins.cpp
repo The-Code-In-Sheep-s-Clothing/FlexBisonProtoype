@@ -46,12 +46,12 @@ namespace builtins {
         if(direction == "Vertical" || direction == "AllDirections"){
             for(int x = 0; x < gs.board.size(); x++){
                 for(int y = 0; y < gs.board[x].size() - length; y++){
-                    if(gs.board[x][y]->desc->name == piecetype){
+                    if(gs.board[x][y]!=NULL && gs.board[x][y]->desc->name == piecetype){
                         int count = 1;
                         int player = gs.board[x][y]->owner;
     
                         for(int l = 1; l < length; l++){
-                            if(gs.board[x][y+l]->desc->name == piecetype &&
+                            if(gs.board[x][y+l]!=NULL && gs.board[x][y+l]->desc->name == piecetype &&
                                     gs.board[x][y+l]->owner == player){
                                 count++;
                             }
@@ -68,12 +68,12 @@ namespace builtins {
         if(direction == "Horizontal" || direction == "AllDirections"){
             for(int x = 0; x < gs.board.size() - length; x++){
                 for(int y = 0; y < gs.board[x].size(); y++){
-                    if(gs.board[x][y]->desc->name == piecetype){
+                    if(gs.board[x][y]!=NULL && gs.board[x][y]->desc->name == piecetype){
                         int count = 1;
                         int player = gs.board[x][y]->owner;
     
                         for(int l = 1; l < length; l++){
-                            if(gs.board[x+l][y]->desc->name == piecetype &&
+                            if(gs.board[x+l][y]!=NULL && gs.board[x+l][y]->desc->name == piecetype &&
                                     gs.board[x+l][y]->owner == player){
                                 count++;
                             }
@@ -89,12 +89,12 @@ namespace builtins {
         if(direction == "Diagonal" || direction == "AllDirections"){
             for(int x = 0; x < gs.board.size() - length; x++){
                 for(int y = 0; y < gs.board[x].size() - length; y++){
-                    if(gs.board[x][y]->desc->name == piecetype){
+                    if(gs.board[x][y]!=NULL && gs.board[x][y]->desc->name == piecetype){
                         int count = 1;
                         int player = gs.board[x][y]->owner;
     
                         for(int l = 1; l < length; l++){
-                            if(gs.board[x+l][y+l]->desc->name == piecetype &&
+                            if(gs.board[x+l][y+l]!=NULL && gs.board[x+l][y+l]->desc->name == piecetype &&
                                     gs.board[x+l][y+l]->owner == player){
                                 count++;
                             }
@@ -110,12 +110,12 @@ namespace builtins {
         if(direction == "Diagonal" || direction == "AllDirections"){
             for(int x = 0; x < gs.board.size()-length; x++){
                 for(int y = 2; y < gs.board[x].size(); y++){
-                    if(gs.board[x][y]->desc->name == piecetype){
+                    if(gs.board[x][y]!=NULL && gs.board[x][y]->desc->name == piecetype){
                         int count = 1;
                         int player = gs.board[x][y]->owner;
     
                         for(int l = 1; l < length; l++){
-                            if(gs.board[x+l][y-l]->desc->name == piecetype &&
+                            if(gs.board[x+l][y-l]!=NULL && gs.board[x+l][y-l]->desc->name == piecetype &&
                                     gs.board[x+l][y-l]->owner == player){
                                 count++;
                             }
@@ -131,5 +131,57 @@ namespace builtins {
 
         std::cout <<"FUNCTION CALL SUCESS" << std::endl;
         return NULL;
+    }
+
+    void *place(GameState &gs, std::vector<std::shared_ptr<ast::Expression>> args){
+        std::string piecetype = (std::dynamic_pointer_cast<ast::StringNode>(args[0]))->get_value();
+        std::string condition = (std::dynamic_pointer_cast<ast::StringNode>(args[1]))->get_value();
+    
+        int x = -1;
+        int y = -1;
+
+        do{
+            std::cout << "x: ";
+            std::cin >> x;
+            std::cout << "y: ";
+            std::cin >> y;
+
+            if(x < 0 || gs.board.size() <= x || y < 0  || gs.board[0].size() <= y){
+                std::cout << "Not within the board" << std::endl;
+                continue;
+            }
+            if(condition == "IsEmpty"){
+                if(gs.board[x][y] != NULL){
+                    std::cout << "A piece is already on that square" << std::endl;
+                    continue;
+                }
+            }
+            //other conditions here????
+            break;
+        }while(1);
+
+        std::shared_ptr<PieceObj> cpiece = NULL;
+        for(std::vector<std::shared_ptr<PieceObj>> piece : gs.pieces){
+            if(piece[gs.current_player]->name == piecetype){
+                cpiece = piece[gs.current_player];
+            }
+        }
+
+        gs.board[x][y]->desc = cpiece;
+        gs.board[x][y]->owner = gs.current_player;
+        cpiece->num--;
+
+        return new ast::NumberNode(1);
+    }
+
+    void *is_full(GameState &gs, std::vector<std::shared_ptr<ast::Expression>> args){
+        for(std::vector<std::shared_ptr<PieceObj>> piecetype : gs.pieces){
+            for(std::shared_ptr<PieceObj> piece : piecetype){
+                if(piece != NULL){
+                    return new ast::NumberNode(1);
+                }
+            }
+        }
+        return new ast::NumberNode(0);
     }
 }
