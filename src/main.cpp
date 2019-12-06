@@ -7,9 +7,11 @@
 #include "interpreter.hpp"
 
 extern int yyparse();
+extern FILE *yyin;
 
 using namespace std;
 int main(int argc, char *argv[]) {
+    yyin = fopen(argv[1], "r");
     ast::Block * ast_root;
     if (yyparse(&ast_root) != 0) {
         cout << "\tParsing failed!" << endl;
