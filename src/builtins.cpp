@@ -164,8 +164,7 @@ namespace builtins {
             }
         }
 
-        gs.board[x][y]->desc = cpiece;
-        gs.board[x][y]->owner = gs.current_player;
+        gs.board[x][y] = std::make_shared<GamePiece>(gs.current_player, cpiece);
         cpiece->num--;
 
         return new ast::NumberNode(1);
