@@ -36,10 +36,99 @@ namespace builtins {
         } 
         return NULL;
     }
-    void * in_a_row(GameState &,
+    void * in_a_row(GameState &gs, 
                     std::vector<std::shared_ptr<ast::Expression>> args) {
-        // std::shared_ptr<ast::NumberNode> num = std::dynamic_pointer_cast<ast::NumberNode>(args[0]);
-        // std::shared_ptr<ast::StringNode> direction = std::dynamic_pointer_cast<ast::StringNode>(args[1]);
+        int length = (std::dynamic_pointer_cast<ast::NumberNode>(args[0]))->get_value();
+        std::string piecetype = (std::dynamic_pointer_cast<ast::StringNode>(args[1]))->get_value();
+        std::string direction = (std::dynamic_pointer_cast<ast::StringNode>(args[2]))->get_value();
+
+
+        if(direction == "Vertical" || direction == "AllDirections"){
+            for(int x = 0; x < gs.board.size(); x++){
+                for(int y = 0; y < gs.board[x].size() - length; y++){
+                    if(gs.board[x][y]->desc->name == piecetype){
+                        int count = 1;
+                        int player = gs.board[x][y]->owner;
+    
+                        for(int l = 1; l < length; l++){
+                            if(gs.board[x][y+l]->desc->name == piecetype &&
+                                    gs.board[x][y+l]->owner == player){
+                                count++;
+                            }
+                        }
+
+                        if(count == length){
+                            return new ast::NumberNode(player);
+                        }
+                    }
+                }
+            }
+        }
+
+        if(direction == "Horizontal" || direction == "AllDirections"){
+            for(int x = 0; x < gs.board.size() - length; x++){
+                for(int y = 0; y < gs.board[x].size(); y++){
+                    if(gs.board[x][y]->desc->name == piecetype){
+                        int count = 1;
+                        int player = gs.board[x][y]->owner;
+    
+                        for(int l = 1; l < length; l++){
+                            if(gs.board[x+l][y]->desc->name == piecetype &&
+                                    gs.board[x+l][y]->owner == player){
+                                count++;
+                            }
+                        }
+
+                        if(count == length){
+                            return new ast::NumberNode(player);
+                        }
+                    }
+                }
+            }
+        }
+        if(direction == "Diagonal" || direction == "AllDirections"){
+            for(int x = 0; x < gs.board.size() - length; x++){
+                for(int y = 0; y < gs.board[x].size() - length; y++){
+                    if(gs.board[x][y]->desc->name == piecetype){
+                        int count = 1;
+                        int player = gs.board[x][y]->owner;
+    
+                        for(int l = 1; l < length; l++){
+                            if(gs.board[x+l][y+l]->desc->name == piecetype &&
+                                    gs.board[x+l][y+l]->owner == player){
+                                count++;
+                            }
+                        }
+
+                        if(count == length){
+                            return new ast::NumberNode(player);
+                        }
+                    }
+                }
+            }
+        }
+        if(direction == "Diagonal" || direction == "AllDirections"){
+            for(int x = 0; x < gs.board.size()-length; x++){
+                for(int y = 2; y < gs.board[x].size(); y++){
+                    if(gs.board[x][y]->desc->name == piecetype){
+                        int count = 1;
+                        int player = gs.board[x][y]->owner;
+    
+                        for(int l = 1; l < length; l++){
+                            if(gs.board[x+l][y-l]->desc->name == piecetype &&
+                                    gs.board[x+l][y-l]->owner == player){
+                                count++;
+                            }
+                        }
+
+                        if(count == length){
+                            return new ast::NumberNode(player);
+                        }
+                    }
+                }
+            }
+        }
+
         std::cout <<"FUNCTION CALL SUCESS" << std::endl;
         return NULL;
     }
