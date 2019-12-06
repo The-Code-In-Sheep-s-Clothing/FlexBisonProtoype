@@ -90,8 +90,7 @@ namespace interpreter {
             const builtins::func_descriptor *desc = builtins::map_func(f->name.get_value());
             if (desc) {
                 std::shared_ptr<ast::NumberNode> ret((ast::NumberNode *)desc->func(this->state, f->args));
-                if (ret->get_value()) {
-                    std::cout << desc->name << std::endl;
+                if (ret->get_value() != -1) {
                     return true;
                 }
             }

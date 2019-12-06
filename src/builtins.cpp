@@ -44,7 +44,7 @@ namespace builtins {
 
         if(direction == "Vertical" || direction == "AllDirections"){
             for(int x = 0; x < gs.board.size(); x++){
-                for(int y = 0; y < gs.board[x].size() - length; y++){
+                for(int y = 0; y < gs.board[x].size() - length + 1; y++){
                     if(gs.board[x][y]!=NULL && gs.board[x][y]->desc->name == piecetype){
                         int count = 1;
                         int player = gs.board[x][y]->owner;
@@ -55,8 +55,9 @@ namespace builtins {
                                 count++;
                             }
                         }
-
-                        if(count == length){
+            
+                        if(count == length){ 
+                            std::cout << count << " " << length << " " << player << std::endl;
                             return new ast::NumberNode(player);
                         }
                     }
@@ -65,7 +66,7 @@ namespace builtins {
         }
 
         if(direction == "Horizontal" || direction == "AllDirections"){
-            for(int x = 0; x < gs.board.size() - length; x++){
+            for(int x = 0; x < gs.board.size() - length + 1; x++){
                 for(int y = 0; y < gs.board[x].size(); y++){
                     if(gs.board[x][y]!=NULL && gs.board[x][y]->desc->name == piecetype){
                         int count = 1;
@@ -86,8 +87,8 @@ namespace builtins {
             }
         }
         if(direction == "Diagonal" || direction == "AllDirections"){
-            for(int x = 0; x < gs.board.size() - length; x++){
-                for(int y = 0; y < gs.board[x].size() - length; y++){
+            for(int x = 0; x < gs.board.size() - length + 1; x++){
+                for(int y = 0; y < gs.board[x].size() - length + 1; y++){
                     if(gs.board[x][y]!=NULL && gs.board[x][y]->desc->name == piecetype){
                         int count = 1;
                         int player = gs.board[x][y]->owner;
@@ -107,7 +108,7 @@ namespace builtins {
             }
         }
         if(direction == "Diagonal" || direction == "AllDirections"){
-            for(int x = 0; x < gs.board.size()-length; x++){
+            for(int x = 0; x < gs.board.size()-length + 1; x++){
                 for(int y = 2; y < gs.board[x].size(); y++){
                     if(gs.board[x][y]!=NULL && gs.board[x][y]->desc->name == piecetype){
                         int count = 1;
@@ -127,7 +128,7 @@ namespace builtins {
                 }
             }
         }
-        return new ast::NumberNode(0);
+        return new ast::NumberNode(-1);
     }
 
     void *place(GameState &gs, std::vector<std::shared_ptr<ast::Expression>> args){
@@ -171,10 +172,10 @@ namespace builtins {
     }
 
     void *is_full(GameState &gs, std::vector<std::shared_ptr<ast::Expression>> args){
-        for(std::vector<std::shared_ptr<PieceObj>> piecetype : gs.pieces){
-            for(std::shared_ptr<PieceObj> piece : piecetype){
+        for(std::vector<std::shared_ptr<GamePiece>> piecetype : gs.board){
+            for(std::shared_ptr<GamePiece> piece : piecetype){
                 if(piece == NULL){
-                    return new ast::NumberNode(0);
+                    return new ast::NumberNode(-1);
                 }
             }
         }
