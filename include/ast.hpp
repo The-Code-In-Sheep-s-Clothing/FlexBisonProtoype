@@ -20,6 +20,7 @@ namespace ast {
             virtual void print(std::ostream &);
             virtual void print(std::ostream &, PrintContext &);
     };
+    class Expression;
     class Statement : public Node {
         protected:
             Types type;
@@ -57,9 +58,9 @@ namespace ast {
 
     // function call
     class FunctionCallExpression : public Expression {
-        StringNode name;
-        std::vector<std::shared_ptr<Expression>> args;
         public:
+            StringNode name;
+            std::vector<std::shared_ptr<Expression>> args;
             FunctionCallExpression(); 
             FunctionCallExpression(StringNode, std::vector<std::shared_ptr<Expression>>); 
             virtual void print(std::ostream &) override;
@@ -119,6 +120,7 @@ namespace ast {
         public:
             TurnBlock();
             TurnBlock(std::shared_ptr<Statement>);
+            TurnBlock(std::vector<std::shared_ptr<Statement>>);
     };
 
     // Win Block
@@ -126,6 +128,7 @@ namespace ast {
         public:
             WinBlock();
             WinBlock(std::shared_ptr<Statement>);
+            WinBlock(std::vector<std::shared_ptr<Statement>>);
             virtual void print_imp(std::ostream &) override;
     };
     // End Block
@@ -133,6 +136,7 @@ namespace ast {
         public:
             EndBlock();
             EndBlock(std::shared_ptr<Statement>);
+            EndBlock(std::vector<std::shared_ptr<Statement>>);
             virtual void print_imp(std::ostream &) override;
     };
 
@@ -140,5 +144,6 @@ namespace ast {
     std::shared_ptr<BoardStatement> get_board(Block *);
     std::shared_ptr<PlayersStatement> get_players(Block *);
     std::vector<std::shared_ptr<PieceStatement>> get_pieces(Block *);
+    std::vector<std::shared_ptr<Statement>> get_statements(Block *, Types);
 }
 #endif

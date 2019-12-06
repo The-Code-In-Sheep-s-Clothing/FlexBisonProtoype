@@ -69,7 +69,7 @@ stmt
     | piece_stmt
     | turn_block { $$ = (ast::Statement *)$1; }
     | win_block { $$ = (ast::Statement *)$1; }
-    | end_block { $$ = (ast::Statement *)$1; }
+    | end_block { $$ = $1; }
     ;
 
 game_stmt: GAME STR_LIT NEWLINE {
@@ -101,17 +101,17 @@ piece_stmt_display_list
 
 /* Turn block */
 turn_block: TURN NEWLINE INDENT function_call_list DEDENT {
-    $$ = (ast::TurnBlock *)$4;
+    $$ = new ast::TurnBlock($4->statements);
 };
 
 /* Win Block */
 win_block: WIN NEWLINE INDENT function_call_list DEDENT {
-    $$ = (ast::WinBlock *)$4;
+    $$ = new ast::WinBlock($4->statements);
 };
 
 /* End Block */
 end_block: END NEWLINE INDENT function_call_list DEDENT {
-    $$ = (ast::EndBlock *)$4;
+    $$ = new ast::EndBlock($4->statements);
 };
 
 function_call
